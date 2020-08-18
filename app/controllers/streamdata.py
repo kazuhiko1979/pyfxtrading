@@ -28,13 +28,3 @@ class StreamData(object):
 
 # singleton
 stream = StreamData()
-
-
-
-
-
-
-
-
-
-

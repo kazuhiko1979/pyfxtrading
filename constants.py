@@ -19,7 +19,7 @@ TRADE_MAP = {
     DURATION_1H: {
         'duration': DURATION_1H,
         'granularity': GRANULARITY_1H,
-    },
+    }
 }
 
 BUY = 'BUY'

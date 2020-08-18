@@ -1,4 +1,3 @@
-from datetime import datetime
 import logging
 import sys
 from threading import Thread
@@ -11,62 +10,25 @@ import settings
 
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
+
 if __name__ == "__main__":
-    """
-    streamThread = Thread(target=stream.stream_ingestion_data)
-    streamThread.start()
-    streamThread.join()
-    """
-    # from app.models.dfcandle import DataFrameCandle
-    # df = DataFrameCandle(settings.product_code, settings.trade_duration)
-    # df.set_all_candles(settings.past_period)
-    # print(df.value)
 
-    serverThread = Thread(target=start)
-    serverThread.start()
-    serverThread.join()
+    from app.controllers.ai import AI
+    ai = AI(
+        product_code=settings.product_code,
+        use_percent=settings.use_percent,
+        duration=settings.trade_duration,
+        past_period=settings.past_period,
+        stop_limit_percent=settings.stop_limit_percent,
+        back_test=settings.back_test
+    )
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    ai.update_optimize_params(True)
+    # # streamThread = Thread(target=stream.stream_ingestion_data)
+    # serverThread = Thread(target=start)
+    #
+    # # streamThread.start()
+    # serverThread.start()
+    #
+    # # streamThread.join()
+    # serverThread.join()

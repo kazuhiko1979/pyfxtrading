@@ -12,6 +12,7 @@ from app.models.base import session_scope
 
 import constants
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -52,13 +53,14 @@ class BaseCandleMixin(object):
             session.add(self)
 
     @classmethod
-    def get_all_candle(cls, limit=100):
+    def get_all_candles(cls, limit=100):
         with session_scope() as session:
             candles = session.query(cls).order_by(
                 desc(cls.time)).limit(limit).all()
 
         if candles is None:
             return None
+
         candles.reverse()
         return candles
 
@@ -101,8 +103,6 @@ def create_candle_with_duration(product_code, duration, ticker):
     ticker_time = ticker.truncate_date_time(duration)
     current_candle = cls.get(ticker_time)
     price = ticker.mid_price
-    # 1M 1:00:00  100
-    #    1:00:01  110 => 1:00:01
     if current_candle is None:
         cls.create(ticker_time, price, price, price, price, ticker.volume)
         return True
@@ -115,19 +115,3 @@ def create_candle_with_duration(product_code, duration, ticker):
     current_candle.close = price
     current_candle.save()
     return False
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

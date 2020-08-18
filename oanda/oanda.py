@@ -16,9 +16,10 @@ from oandapyV20.exceptions import V20Error
 import constants
 import settings
 
-logger = logging.getLogger(__name__)
 
 ORDER_FILLED = 'FILLED'
+
+logger = logging.getLogger(__name__)
 
 
 class Balance(object):
@@ -45,7 +46,6 @@ class Ticker(object):
 
     def truncate_date_time(self, duration):
         ticker_time = self.time
-
         if duration == constants.DURATION_5S:
             new_sec = math.floor(self.time.second / 5) * 5
             ticker_time = datetime(
@@ -63,11 +63,6 @@ class Ticker(object):
         str_date = datetime.strftime(ticker_time, time_format)
         return datetime.strptime(str_date, time_format)
 
-    # 2020-01-02 03:04:27
-    # 2020-01-02 03:04:25 5S
-    # 2020-01-02 03:04:00 1M
-    # 2020-01-02 03:00:00 1H
-
 
 class Order(object):
     def __init__(self, product_code, side, units, order_type='MARKET', order_state=None, filling_transaction_id=None):
@@ -84,11 +79,11 @@ class OrderTimeoutError(Exception):
 
 
 class Trade(object):
-        def __init__(self, trade_id, side, price, units):
-            self.trade_id = trade_id
-            self.side = side
-            self.price = price
-            self.units = units
+    def __init__(self, trade_id, side, price, units):
+        self.trade_id = trade_id
+        self.side = side
+        self.price = price
+        self.units = units
 
 
 class APIClient(object):
@@ -97,7 +92,7 @@ class APIClient(object):
         self.account_id = account_id
         self.client = API(access_token=access_token, environment=environment)
 
-    def get_balance(self):
+    def get_balance(self) -> Balance:
         req = accounts.AccountSummary(accountID=self.account_id)
         try:
             resp = self.client.request(req)
@@ -121,8 +116,7 @@ class APIClient(object):
             raise
 
         timestamp = datetime.timestamp(
-            dateutil.parser.parse((resp['time'])))
-
+            dateutil.parser.parse(resp['time']))
         price = resp['prices'][0]
         instrument = price['instrument']
         bid = float(price['bids'][0]['price'])
@@ -133,7 +127,7 @@ class APIClient(object):
     def get_candle_volume(self, count=1, granularity=constants.TRADE_MAP[settings.trade_duration]['granularity']):
         params = {
             'count': count,
-            'granularity': granularity,
+            'granularity': granularity
         }
         req = instruments.InstrumentsCandles(instrument=settings.product_code, params=params)
         try:
@@ -141,7 +135,7 @@ class APIClient(object):
         except V20Error as e:
             logger.error(f'action=get_candle_volume error={e}')
             raise
-        print(resp)
+
         return int(resp['candles'][0]['volume'])
 
     def get_realtime_ticker(self, callback):
@@ -158,8 +152,10 @@ class APIClient(object):
                     volume = self.get_candle_volume()
                     ticker = Ticker(instrument, timestamp, bid, ask, volume)
                     callback(ticker)
+
         except V20Error as e:
-            logger.error(f'action=get_realtime_error={e}')
+            logger.error(f'action=get_realtime_ticker error={e}')
+            raise
 
     def send_order(self, order: Order) -> Trade:
         if order.side == constants.BUY:
@@ -176,7 +172,7 @@ class APIClient(object):
         req = orders.OrderCreate(accountID=self.account_id, data=order_data)
         try:
             resp = self.client.request(req)
-            logger.info(f'action_order resp={resp}')
+            logger.info(f'action=send_order resp={resp}')
         except V20Error as e:
             logger.error(f'action=send_order error={e}')
             raise
@@ -246,8 +242,6 @@ class APIClient(object):
             logger.error(f'action=get_open_trade error={e}')
             raise
 
-        print(resp)
-
         trades_list = []
         for trade in resp['trades']:
             trades_list.insert(0, Trade(
@@ -274,85 +268,3 @@ class APIClient(object):
             price=float(resp['orderFillTransaction']['price'])
         )
         return trade
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

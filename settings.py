@@ -2,6 +2,7 @@ import configparser
 
 from utils.utils import bool_from_str
 
+
 conf = configparser.ConfigParser()
 conf.read('settings.ini')
 
@@ -20,9 +21,3 @@ use_percent = float(conf['pytrading']['use_percent'])
 past_period = int(conf['pytrading']['past_period'])
 stop_limit_percent = float(conf['pytrading']['stop_limit_percent'])
 num_ranking = int(conf['pytrading']['num_ranking'])
-
-
-
-
-
-

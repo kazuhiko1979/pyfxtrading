@@ -9,20 +9,22 @@
     var data = google.visualization.arrayToDataTable([
       {% for candle in candles %}
         [
-            '{{ candle.time }}',
-            {{ candle.low }},
-            {{ candle.open }},
-            {{ candle.close }},
-            {{ candle.high }},
+          '{{ candle.time}}',
+          {{ candle.low }},
+          {{ candle.open }},
+          {{ candle.close }},
+          {{ candle.high }},
         ],
       {% endfor %}
-
-      ], true);
+      // Treat first row as data as well.
+    ], true);
 
     var options = {
       legend:'none',
       candlestick: {
-
+        fallingColor: { strokeWidth: 0, fill: '#a52714'},
+        risingColor: { strokeWidth: 0, fill: '#0f9d58'}
+      }
     };
 
     var chart = new google.visualization.CandlestickChart(document.getElementById('chart_div'));
