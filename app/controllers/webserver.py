@@ -133,11 +133,15 @@ def api_make_handler():
 
     events = request.args.get('events')
     if events:
-        df.add_events(df.candles[0].time)
+        if settings.back_test:
+            from app.controllers.streamdata import stream
+            df.event = stream.ai.signal_events
+        else:
+            df.add_events(df.candles[0].time)
 
     return jsonify(df.value), 200
 
 
 def start():
     # app.run(host='127.0.0.1', port=settings.web_port, threaded=True)
-    app.run(host='0.0.0.0', port=settings.web_port, threaded=True)
+    app.run(host='127.0.0.1', port=settings.web_port, threaded=True)
